@@ -2,11 +2,17 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import environ
 
+env = environ.Env(
+    CONFIG=(str, 'local')
+)
+environ.Env.read_env()
+CONFIG=env('CONFIG')
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Providencia.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'Providencia.settings.{CONFIG}')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

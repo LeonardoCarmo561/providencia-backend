@@ -8,9 +8,20 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 """
 
 import os
-
+import environ
+from pathlib import Path
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Providencia.settings')
+env = environ.Env(
+    CONFIG=(str, 'local')
+)
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+CONFIG = env('CONFIG')
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'Providencia.settings.{CONFIG}')
 
 application = get_asgi_application()
