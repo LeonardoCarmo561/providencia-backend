@@ -5,7 +5,7 @@ import sys
 import environ
 
 env = environ.Env(
-    CONFIG=(str, 'local')
+    CONFIG=(str, '')
 )
 environ.Env.read_env()
 CONFIG=env('CONFIG')

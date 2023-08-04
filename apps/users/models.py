@@ -9,7 +9,7 @@ from simple_history.models import HistoricalRecords
 
 def upload_profile_picture_location(instance, filename):
     filebase, extension = os.path.splitext(filename)
-    return ''
+    return 'users/%s/%s%s' % (instance.username, filebase, extension)
 
 class UserManager(BaseUserManager):
     def _create_user(self, username, email, password, is_superuser, is_staff, **kwargs):
@@ -66,8 +66,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
 
     profile_picture = models.ImageField(_('Profile picture'),
+        upload_to=upload_profile_picture_location,
         null=True,
     )
+
+
 
     is_superuser = models.BooleanField(_('Superuser'),
         default=False
