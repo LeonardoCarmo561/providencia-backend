@@ -27,10 +27,6 @@ class TokenObtainPairView(DefaultTokenObtainPairView):
         serializer = self.get_serializer(data=request.data)
         email = serializer.initial_data['email']
         user = User.objects.filter(email = email).first()
-        if user:
-            pass
-        else:
-            raise exceptions.APIException(_('E-mail not registered'), status.HTTP_404_NOT_FOUND)
 
         try:
             serializer.is_valid(raise_exception=True)
