@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from django.middleware import csrf
 from django.utils.translation import gettext as _
+from django.utils import timezone
 
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt import exceptions as jwt_exceptions
@@ -50,6 +51,14 @@ class TokenObtainPairView(DefaultTokenObtainPairView):
             expires = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
             httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
         )
+        response.set_cookie(
+            value = timezone.now(),
+            key = 'session',
+            secure = False,
+            samesite = 'Lax',
+            expires = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
+            httponly = False
+        )
         csrf.get_token(request)
         response.data = {'Success':'Login bem Sucedido', 'data':serializer.validated_data}
         return response
@@ -75,6 +84,14 @@ class TokenRefreshPairView(DefaultTokenRefreshView):
             httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
         )
         response.set_cookie(
+            value = timezone.now(),
+            key = 'session',
+            secure = False,
+            samesite = 'Lax',
+            expires = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
+            httponly = False
+        )
+        response.set_cookie(
             value = data['refresh'],
             key = settings.SIMPLE_JWT['REFRESH_COOKIE'],
             secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
@@ -89,8 +106,6 @@ class TokenRefreshPairView(DefaultTokenRefreshView):
 
 class TokenLogoutView(APIView):
     http_method_names = ['post']
-    authentication_classes = [JWTCookieAuthentication]
-    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
@@ -100,8 +115,9 @@ class TokenLogoutView(APIView):
             response = Response()
             response.delete_cookie(settings.SIMPLE_JWT['REFRESH_COOKIE'])
             response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'])
+            response.delete_cookie('session')
             response.data = {'Success':'Deslogado com suceso'}
-            response.status_code = status.HTTP_205_RESET_CONTENT
+            response.status_code = status.HTTP_200_OK
             return response
 
         except Exception as e:

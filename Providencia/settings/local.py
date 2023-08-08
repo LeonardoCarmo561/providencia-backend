@@ -10,6 +10,7 @@ ALLOWED_HOSTS = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
